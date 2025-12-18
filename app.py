@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory # Agregamos send_
 import smtplib
 import os
 import segno
+import ssl
 from PIL import Image
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
@@ -79,11 +80,11 @@ def procesar():
         msg.attach(part)
 
         # Enviar
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.login(email_emisor, contra)
-        server.sendmail(email_emisor, correo, msg.as_string())
-        server.quit()
+        context = ssl.create_default_context()
+        # Usamos SMTP_SSL y el puerto 465
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(email_emisor, contra)
+            server.sendmail(email_emisor, correo, msg.as_string())
 
         # Limpieza
         if os.path.exists(base_path): os.remove(base_path)
@@ -99,6 +100,7 @@ def procesar():
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

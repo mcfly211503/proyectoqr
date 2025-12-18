@@ -147,11 +147,11 @@ server.quit()
 os.remove(final_path)
 os.remove(output_filename)
 
-
-    print(f"Procesando para: {nombre}, Correo: {correo}")
+print(f"Procesando para: {nombre}, Correo: {correo}")
     
     # Respondemos al HTML que todo salió bien
-    return jsonify({"status": "ok", "message": "Proceso completado"}), 200
+return jsonify({"status": "ok", "message": "Proceso completado"}), 200
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000)

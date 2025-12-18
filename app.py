@@ -60,33 +60,26 @@ def procesar():
         output_filename = os.path.join(folder_temp, f"qr_pdf_{nombre}.pdf")
         pdf.output(output_filename)
 
-        # Configurar Email (Variables de entorno de Render)
-        email_emisor = os.getenv("EMAIL_USER")
-        contra = os.getenv("EMAIL_PASS")
+        # 3. Configurar y Enviar con Resend (Reemplaza todo el bloque anterior)
+        resend.api_key = os.getenv("RESEND_API_KEY")
         
-        subject = "Generacion de QR"
-        message = f"Hola {nombre_original}, aqui tiene el qr que solicito."
-
-        msg = MIMEMultipart()
-        msg['From'] = email_emisor
-        msg['To'] = correo
-        msg['Subject'] = subject
-        msg.attach(MIMEText(message, 'plain'))
-
-        # Adjuntar PDF
         with open(output_filename, "rb") as f:
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload(f.read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition', f'attachment; filename=qr_pdf_{nombre}.pdf')
-        msg.attach(part)
+            pdf_data = list(f.read()) # Leemos el archivo una sola vez
 
-        # Enviar
-        context = ssl.create_default_context()
-        # Usamos SMTP_SSL y el puerto 465
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(email_emisor, contra)
-            server.sendmail(email_emisor, correo, msg.as_string())
+        params = {
+            "from": "onboarding@resend.dev",
+            "to": correo,
+            "subject": "Generación de QR",
+            "html": f"<p>Hola {nombre_original}, aquí tiene el QR que solicitó.</p>",
+            "attachments": [
+                {
+                    "filename": f"qr_pdf_{nombre}.pdf",
+                    "content": pdf_data,
+                }
+            ]
+        }
+
+        resend.Emails.send(params)
 
         # Limpieza
         if os.path.exists(base_path): os.remove(base_path)
@@ -102,6 +95,7 @@ def procesar():
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

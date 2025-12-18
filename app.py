@@ -67,10 +67,15 @@ def procesar():
             pdf_data = list(f.read()) # Leemos el archivo una sola vez
 
         params = {
-            "from": "onboarding@resend.dev",
+            # Aquí usas el subdominio 'send' que configuramos
+            "from": "Arturo Maldonado <noreply@send.arturomaldonadoportafolio.space>",
             "to": correo,
-            "subject": "Generación de QR",
-            "html": f"<p>Hola {nombre_original}, aquí tiene el QR que solicitó.</p>",
+            "subject": "Tu Código QR solicitado",
+            "html": f"""
+                <h3>¡Hola {nombre_original}!</h3>
+                <p>Adjunto encontrarás el código QR que generaste en mi plataforma.</p>
+                <p>Saludos,<br>Arturo Maldonado</p>
+            """,
             "attachments": [
                 {
                     "filename": f"qr_pdf_{nombre}.pdf",
@@ -95,6 +100,7 @@ def procesar():
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

@@ -37,37 +37,20 @@ def procesar():
         os.makedirs(folder_path, exist_ok=True)
 
         base_path = os.path.join(folder_path, f"qr_base_{nombre}.png")
-        final_path = os.path.join(folder_path, f"qr_con_logo_{nombre}.png")
 
         # Generar QR
         qr = segno.make_qr(data, error='h')
         qr.save(base_path, scale=15, dark="#24ff50", light="#001a05")
 
-        # Cargar Logo
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        logo_path = os.path.join(BASE_DIR, "imagenes", "barca.png")
         
-        qr_img = Image.open(base_path).convert("RGBA")
-        logo = Image.open(logo_path).convert("RGBA")
-
-        logo_size = int(qr_img.size[0] * 0.23)
-        logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
-
-        pos = ((qr_img.size[0] - logo_size) // 2, (qr_img.size[1] - logo_size) // 2)
-
-        qr_img.paste(logo, pos, logo)
-        qr_img.save(final_path)
-
-        os.remove(base_path)
-
         # Crear PDF
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Helvetica", size=12)
         pdf.cell(200, 10, text="Su link esta listo", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
 
-        if os.path.exists(final_path):
-            pdf.image(final_path, x=50, y=50, w=100)
+        if os.path.exists(base_path):
+            pdf.image(base_path, x=50, y=50, w=100)
 
         folder_temp = os.path.join(os.getcwd(), "archivos_generados")
         os.makedirs(folder_temp, exist_ok=True)
@@ -103,7 +86,7 @@ def procesar():
         server.quit()
 
         # Limpieza
-        if os.path.exists(final_path): os.remove(final_path)
+        if os.path.exists(base_path): os.remove(base_path)
         if os.path.exists(output_filename): os.remove(output_filename)
 
         print(f"✅ Éxito: Procesado para {nombre_original}")
@@ -116,6 +99,7 @@ def procesar():
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

@@ -44,7 +44,7 @@
 
             const estado = document.getElementById('estado');
             estado.innerText = "Procesando...";
-            estado.style.color = "blue";
+            estado.style.color = "#1E90FF";
 
             try {
                 // Reemplaza con la URL de tu app en Render cuando la subas
@@ -56,14 +56,14 @@
 
                 if (response.ok) {
                     estado.innerText = "¡Éxito! PDF generado y correo enviado.";
-                    estado.style.color = "green";
+                    estado.style.color = "#22C55E";
                 } else {
                     estado.innerText = "Hubo un error en el servidor.";
-                    estado.style.color = "red";
+                    estado.style.color = "#EF4444";
                 }
             } catch (error) {
                 estado.innerText = "No se pudo conectar con el servidor.";
-                estado.style.color = "red";
+                estado.style.color = "#EF4444";
             }
         }
     </script>

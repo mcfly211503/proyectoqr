@@ -68,7 +68,7 @@ def procesar():
 
         params = {
             # Aquí usas el subdominio 'send' que configuramos
-            "from": "Arturo Maldonado <noreply@send.arturomaldonadoportafolio.space>",
+            "from": "Arturo Maldonado <noreply@arturomaldonadoportafolio.space>",
             "to": correo,
             "subject": "Tu Código QR solicitado",
             "html": f"""
@@ -100,6 +100,7 @@ def procesar():
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

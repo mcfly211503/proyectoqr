@@ -96,8 +96,7 @@ try:
 
         # 4. Enviamos el correo
         resend.Emails.send(params)
-
-    except Exception as e:
+except Exception as e:
         print(f"Error al enviar correo: {e}")
         # Opcional: puedes retornar un error al usuario aquí
 
@@ -115,6 +114,7 @@ try:
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

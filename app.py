@@ -1,17 +1,9 @@
-from flask import Flask, request, jsonify, send_from_directory # Agregamos send_from_directory
-import smtplib
+from flask import Flask, request, jsonify, send_from_directory
 import os
 import segno
 import resend
-import base64
-import ssl
-from PIL import Image
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -23,7 +15,6 @@ def index():
 
 @app.route('/procesar', methods=['POST'])
 def procesar():
-    # --- TODO ESTO DEBE TENER 4 ESPACIOS HACIA LA DERECHA ---
     try:
         # 1. Recibimos el JSON
         datos = request.json
@@ -38,14 +29,12 @@ def procesar():
         directorios_base = os.getcwd()
         folder_path = os.path.join(directorios_base, "temp_files")
         os.makedirs(folder_path, exist_ok=True)
-
         base_path = os.path.join(folder_path, f"qr_base_{nombre}.png")
 
         # Generar QR
         qr = segno.make_qr(data, error='h')
         qr.save(base_path, scale=15, dark="#24d900", light="#ffffff")
 
-        
         # Crear PDF
         pdf = FPDF()
         pdf.add_page()
@@ -60,19 +49,16 @@ def procesar():
         output_filename = os.path.join(folder_temp, f"qr_pdf_{nombre}.pdf")
         pdf.output(output_filename)
 
-        # 3. Configurar y Enviar con Resend (Reemplaza todo el bloque anterior)
+        # 2. Configurar Resend
         resend.api_key = os.getenv("RESEND_API_KEY")
         
-try:
-        # 1. Leemos el PDF
+        # Leemos los archivos para adjuntar
         with open(output_filename, "rb") as f:
             pdf_data = list(f.read())
-
-        # 2. Leemos la imagen (base_path)
         with open(base_path, "rb") as f:
             image_data = list(f.read())
 
-        # 3. Configuramos los parámetros
+        # 3. Enviar con Resend
         params = {
             "from": "Arturo Maldonado <noreply@arturomaldonadoportafolio.space>",
             "to": correo,
@@ -83,22 +69,18 @@ try:
                 <p>Saludos,<br>Arturo Maldonado</p>
             """,
             "attachments": [
-                {{
+                {
                     "filename": f"qr_pdf_{nombre}.pdf",
                     "content": pdf_data,
-                }},
-                {{
+                },
+                {
                     "filename": f"qr_imagen_{nombre}.png",
                     "content": image_data,
-                }}
+                }
             ]
         }
 
-        # 4. Enviamos el correo
         resend.Emails.send(params)
-except Exception as e:
-        print(f"Error al enviar correo: {e}")
-        # Opcional: puedes retornar un error al usuario aquí
 
         # Limpieza
         if os.path.exists(base_path): os.remove(base_path)
@@ -111,18 +93,5 @@ except Exception as e:
         print(f"❌ Error: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
-
-
-
-
-
-
-
-
-
-

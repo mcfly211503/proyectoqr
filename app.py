@@ -63,36 +63,43 @@ def procesar():
         # 3. Configurar y Enviar con Resend (Reemplaza todo el bloque anterior)
         resend.api_key = os.getenv("RESEND_API_KEY")
         
-       # 1. Leemos el PDF (ya lo tienes)
-with open(output_filename, "rb") as f:
-    pdf_data = list(f.read())
+try:
+        # 1. Leemos el PDF
+        with open(output_filename, "rb") as f:
+            pdf_data = list(f.read())
 
-# 2. Leemos la imagen (base_path)
-with open(base_path, "rb") as f:
-    image_data = list(f.read())
+        # 2. Leemos la imagen (base_path)
+        with open(base_path, "rb") as f:
+            image_data = list(f.read())
 
-params = {
-    "from": "Arturo Maldonado <noreply@arturomaldonadoportafolio.space>",
-    "to": correo,
-    "subject": "Tu Código QR solicitado",
-    "html": f"""
-        <h3>¡Hola {nombre_original}!</h3>
-        <p>Adjunto encontrarás el código QR en formato imagen y el documento PDF que generaste.</p>
-        <p>Saludos,<br>Arturo Maldonado</p>
-    """,
-    "attachments": [
-        {
-            "filename": f"qr_pdf_{nombre}.pdf",
-            "content": pdf_data,
-        },
-        {
-            "filename": f"qr_imagen_{nombre}.png", # O .jpg según tu base_path
-            "content": image_data,
+        # 3. Configuramos los parámetros
+        params = {
+            "from": "Arturo Maldonado <noreply@arturomaldonadoportafolio.space>",
+            "to": correo,
+            "subject": "Tu Código QR solicitado",
+            "html": f"""
+                <h3>¡Hola {nombre_original}!</h3>
+                <p>Adjunto encontrarás el código QR en formato imagen y el documento PDF que generaste.</p>
+                <p>Saludos,<br>Arturo Maldonado</p>
+            """,
+            "attachments": [
+                {{
+                    "filename": f"qr_pdf_{nombre}.pdf",
+                    "content": pdf_data,
+                }},
+                {{
+                    "filename": f"qr_imagen_{nombre}.png",
+                    "content": image_data,
+                }}
+            ]
         }
-    ]
-}
 
+        # 4. Enviamos el correo
         resend.Emails.send(params)
+
+    except Exception as e:
+        print(f"Error al enviar correo: {e}")
+        # Opcional: puedes retornar un error al usuario aquí
 
         # Limpieza
         if os.path.exists(base_path): os.remove(base_path)
@@ -108,6 +115,7 @@ params = {
 # FUERA de la función
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 

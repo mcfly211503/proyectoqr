@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de QR y Envío</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: #f4f4f9;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0306b1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        #estado {
+            margin-top: 15px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h3>Registro de Usuario</h3>
+        <input type="text" id="nombre" placeholder="Nombre completo">
+        <input type="email" id="correo" placeholder="Correo electrónico">
+        <input type="text" id="url_qr" placeholder="URL para el QR (ej: https://...)">
+
+        <button onclick="enviarDatos()">Generar y Enviar</button>
+        <p id="estado"></p>
+    </div>
+
+    <script>
+        async function enviarDatos() {
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                url_qr: document.getElementById('url_qr').value
+            };
+
+            const estado = document.getElementById('estado');
+            estado.innerText = "Procesando...";
+            estado.style.color = "blue";
+
+            try {
+                // Reemplaza con la URL de tu app en Render cuando la subas
+                const response = await fetch("/procesar", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    estado.innerText = "¡Éxito! PDF generado y correo enviado.";
+                    estado.style.color = "green";
+                } else {
+                    estado.innerText = "Hubo un error en el servidor.";
+                    estado.style.color = "red";
+                }
+            } catch (error) {
+                estado.innerText = "No se pudo conectar con el servidor.";
+                estado.style.color = "red";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

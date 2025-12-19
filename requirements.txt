@@ -1,0 +1,8 @@
+flask
+flask-cors
+gunicorn
+qrcode
+pillow
+segno
+fpdf2
+resend

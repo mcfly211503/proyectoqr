@@ -1,0 +1,2 @@
+# proyectoqr
+generacion de qr
